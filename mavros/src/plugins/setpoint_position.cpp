@@ -47,7 +47,7 @@ public:
 		tf_listen(false)
 	{ }
 
-	void initialize(UAS &uas_) override
+	void initialize(UAS &uas_)
 	{
 		PluginBase::initialize(uas_);
 
@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	Subscriptions get_subscriptions() override
+	Subscriptions get_subscriptions()
 	{
 		return { /* Rx disabled */ };
 	}
@@ -134,7 +134,8 @@ private:
 		 * In past versions on PX4 there been bug described in #273.
 		 * If you got similar issue please try update firmware first.
 		 */
-		const uint16_t ignore_all_except_xyz_y = (1 << 11) | (7 << 6) | (7 << 3);
+		// const uint16_t ignore_all_except_xyz_y = (1 << 11) | (7 << 6) | (7 << 3);
+		const uint16_t pickup_typemask = (1 << 15) | (2 << 10) | (7 << 6) | (7 << 3);
 
 		auto p = [&] () {
 				if (static_cast<MAV_FRAME>(mav_frame) == MAV_FRAME::BODY_NED || static_cast<MAV_FRAME>(mav_frame) == MAV_FRAME::BODY_OFFSET_NED) {
@@ -155,7 +156,7 @@ private:
 
 		set_position_target_local_ned(stamp.toNSec() / 1000000,
 			utils::enum_value(mav_frame),
-			ignore_all_except_xyz_y,
+			pickup_typemask,
 			p,
 			Eigen::Vector3d::Zero(),
 			Eigen::Vector3d::Zero(),
